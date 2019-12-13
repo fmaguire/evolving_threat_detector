@@ -2,9 +2,6 @@
 Evolving Threat Detector
 =============================
 
-.. image:: https://badge.fury.io/py/evolving_threat_detector.png
-    :target: http://badge.fury.io/py/evolving_threat_detector
-
 .. image:: https://travis-ci.org/fmaguire/evolving_threat_detector.png?branch=master
     :target: https://travis-ci.org/fmaguire/evolving_threat_detector
 
@@ -20,6 +17,10 @@ Make sure you add any new requirements you've added to the requirements.txt file
 
 If you write then then tests can be run as follows::
     pytest
+
+Alternatively to run the full set of tests including different python versions,
+pyflake code style, and building the documentation run::
+    tox
 
 Features
 --------

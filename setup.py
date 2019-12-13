@@ -24,7 +24,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='evolving_threat_detector',
     version='0.0.1',
-    description='Identifying changes in resistome relative to closest relatives and contextualising results',
+    description='Contexualising changes in resistomes',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Finlay Maguire',
     author_email='finlaymaguire@gmail.com',

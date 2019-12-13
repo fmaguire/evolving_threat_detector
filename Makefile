@@ -24,7 +24,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 evolving_threat_detector test
+	flake8 etd test
 
 test:
 	py.test
@@ -33,15 +33,15 @@ test-all:
 	tox
 
 coverage:
-	coverage run --source evolving_threat_detector setup.py test
+	coverage run --source etd setup.py test
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
 
 docs:
-	rm -f docs/evolving_threat_detector.rst
+	rm -f docs/etd.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ evolving_threat_detector
+	sphinx-apidoc -o docs/ etd 
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html

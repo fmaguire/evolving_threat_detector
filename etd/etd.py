@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os.path
-
 __version__ = "0.0.1"
 
 

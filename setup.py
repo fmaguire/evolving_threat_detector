@@ -30,9 +30,9 @@ setup(
     author_email='finlaymaguire@gmail.com',
     url='https://github.com/fmaguire/evolving_threat_detector',
     packages=[
-        'evolving_threat_detector',
+        'etd',
     ],
-    package_dir={'evolving_threat_detector': 'evolving_threat_detector'},
+    package_dir={'etc': 'etc'},
     include_package_data=True,
     install_requires=[
     ],

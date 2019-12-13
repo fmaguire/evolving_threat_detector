@@ -1,11 +1,11 @@
 """
-Tests for `evolving_threat_detector` module.
+Tests for `etd` module.
 """
 import pytest
-from evolving_threat_detector import evolving_threat_detector
+from etd import etd
 
 
-class TestEvolving_threat_detector(object):
+class TestEtd(object):
 
     @classmethod
     def setup_class(cls):

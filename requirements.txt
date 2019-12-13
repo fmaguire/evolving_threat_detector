@@ -1,4 +1,5 @@
 wheel>=0.22
 tox
+tox-travis
 pytest
 flake8

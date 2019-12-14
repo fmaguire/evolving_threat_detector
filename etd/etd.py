@@ -6,7 +6,7 @@ __version__ = "0.0.1"
 import time
 import pandas as pd
 import logging
-import os, sys, csv, glob
+import os, sys, csv, glob, json
 import subprocess
 
 def run_rgi(input_genome, num_threads, run_name):
@@ -129,18 +129,41 @@ def find_relatives(input_genome, database_dir, mash_distance,
 
 def find_rgi_differences(rgi_output):
     files = rgi_output["genomes"]
-
-    isolate = set(rgi_output["Best_Hit_ARO"])
+    index = "ARO" # Best_Hit_ARO
+    isolate = set(rgi_output[index])
     others = set()
 
     for f in files:
         df2 = pd.read_csv(f, sep='\t')
-        others.update(set(df2["Best_Hit_ARO"]))
+        others.update(set(df2[index]))
 
     # print("Isolate - Others: ", isolate.difference(others))
     # print("Others - Isolate: ", others.difference(isolate))
 
     return {"unique_to_isolate": isolate.difference(others), "missing_from_isolate": others.difference(isolate)}
+
+def get_genomic_context(df, gene):
+    # df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt"), sep='\t')
+    # gene="MCR-9"
+    out = df.loc[df['aro_accession'] == "ARO:{}".format(gene)]
+    out = out.loc[df['rgi_criteria'] == "Perfect"]
+
+    out_plasmid = out.loc[df['data_type'] == "ncbi_plasmid"]
+    out_chromosome = out.loc[df['data_type'] == "ncbi_chromosome"]
+
+    s_plasmid = list(out_plasmid["species_name"])
+    u_plasmid = []
+    for i_plasmid in s_plasmid:
+        if i_plasmid not in u_plasmid:
+            u_plasmid.append(i_plasmid)
+
+    s_chromosome = list(out_chromosome["species_name"])
+    u_chromosome = []
+    for i_chromosome in s_chromosome:
+        if i_chromosome not in u_chromosome:
+            u_chromosome.append(i_chromosome)
+
+    return {"found_in_plasmids": u_plasmid, "found_in_chromosomes": u_chromosome}
 
 def run(args):
     """
@@ -194,11 +217,21 @@ def run(args):
     # combine outputs into one dataframe
     # get difference between rgi hits and nearest relatives
     differences = find_rgi_differences(rgi_output)
+    # print(differences)
 
-    # for genes in differences:
-        # print(genes)
+    # load index file
+    # index-for-model-sequences.txt
+    df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt.gz"), sep='\t', compression="gzip")
+    context = {}
+    for genes in differences:
+        if genes == "unique_to_isolate":
+            # print(differences[genes])
+            for gene in differences[genes]:
+                context[gene] = get_genomic_context(df, gene)
         # place on evolutionary tree
         # compare genomic contexts
         # - has this gene moved from plamid to chromosome
         # - has this gene been found on this organism before
         # try and grab geographic data?
+    print("------- Gene genomic contexts: (unique_to_isolate) ------------------")
+    print(json.dumps(context, indent=2))

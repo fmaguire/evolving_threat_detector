@@ -127,7 +127,7 @@ def find_relatives(input_genome, database_dir, mash_distance,
 
     return closest_taxa
 
-def find_rgi_differences(rgi_output, args_in_relatives):
+def find_rgi_differences(rgi_output):
     files = rgi_output["genomes"]
 
     isolate = set(rgi_output["Best_Hit_ARO"])
@@ -180,7 +180,7 @@ def run(args):
                                        args.mash_distance,
                                        args.num_threads,
                                        run_name)
-    
+
     for g in closest_relatives:
         # find tab files for related genomes
         files = glob.glob(os.path.join(args.database_dir, "rgi_output", "*", "*.txt"))
@@ -194,9 +194,11 @@ def run(args):
     # combine outputs into one dataframe
     # get difference between rgi hits and nearest relatives
     differences = find_rgi_differences(rgi_output)
-    # print(dict(differences))
 
     # for genes in differences:
+        # print(genes)
         # place on evolutionary tree
         # compare genomic contexts
+        # - has this gene moved from plamid to chromosome
+        # - has this gene been found on this organism before
         # try and grab geographic data?

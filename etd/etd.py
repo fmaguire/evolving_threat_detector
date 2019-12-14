@@ -132,15 +132,38 @@ def find_rgi_differences(rgi_output):
     index = "ARO" # Best_Hit_ARO
     isolate = set(rgi_output[index])
     others = set()
-
+    seq_df = rgi_output.iloc[:, lambda rgi_output: [10, 17]]
+    sequences = {}
+    # seq_df = pd.DataFrame()
     for f in files:
+        # print(">>>", f)
         df2 = pd.read_csv(f, sep='\t')
+        # sequences = (set(df2["ARO"]),"==>", set(df2["Predicted_DNA"]))
+        # seq_df = df2.iloc[:, lambda df2: [10, 17]]
+        # seqs = seq_df.to_dict(orient="index")
+        # for s in seqs:
+        #     # print(seqs[s]["ARO"])
+        #     sequences[f] = {"ARO": seqs[s]["ARO"], "Predicted_DNA": seqs[s]["Predicted_DNA"]}
+        # # exit("??")
         others.update(set(df2[index]))
 
     # print("Isolate - Others: ", isolate.difference(others))
     # print("Others - Isolate: ", others.difference(isolate))
-
-    return {"unique_to_isolate": isolate.difference(others), "missing_from_isolate": others.difference(isolate)}
+    unique_to_isolate = isolate.difference(others)
+    missing_from_isolate = others.difference(isolate)
+    # add sequences for each uniq gene
+    sequences = seq_df.to_dict(orient="index")
+    seqs = {}
+    # print(unique_to_isolate)
+    # print(missing_from_isolate)
+    for s in sequences:
+        if sequences[s]["ARO"] in unique_to_isolate:
+            seqs[sequences[s]["ARO"]] = sequences[s]["Predicted_DNA"]
+    # print(sequences)
+    # print(seq_df.to_dict(orient="index"))
+    # print(json.dumps(seqs, indent=2))
+    # exit("?")
+    return {"unique_to_isolate": unique_to_isolate, "missing_from_isolate": missing_from_isolate, "sequences": seqs}
 
 def get_genomic_context(df, gene):
     # df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt"), sep='\t')
@@ -164,6 +187,15 @@ def get_genomic_context(df, gene):
             u_chromosome.append(i_chromosome)
 
     return {"found_in_plasmids": u_plasmid, "found_in_chromosomes": u_chromosome}
+
+def get_genomic_context_alt(df, gene):
+    out = df.loc[df['ARO Accession'] == "ARO:{}".format(gene)]
+    out = out.loc[df['Criteria'] == "perfect"]
+
+    out = out.loc[ (df['NCBI Chromosome'] > 0.00) | (df['NCBI Plasmid'] > 0.00)]
+    # Criteria
+    return out.to_dict(orient="index")
+
 
 def run(args):
     """
@@ -217,17 +249,21 @@ def run(args):
     # combine outputs into one dataframe
     # get difference between rgi hits and nearest relatives
     differences = find_rgi_differences(rgi_output)
-    # print(differences)
+    print("------- differences: (unique_to_isolate) ------------------")
+    # print(json.dumps(differences, indent=2))
+    print(differences)
 
     # load index file
     # index-for-model-sequences.txt
-    df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt.gz"), sep='\t', compression="gzip")
+    # df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt.gz"), sep='\t', compression="gzip")
+    df = pd.read_csv(os.path.join(args.database_dir, "index", "card_prevalence.txt.gz"), sep='\t', compression="gzip")
     context = {}
     for genes in differences:
         if genes == "unique_to_isolate":
             # print(differences[genes])
             for gene in differences[genes]:
-                context[gene] = get_genomic_context(df, gene)
+                # context[gene] = get_genomic_context(df, gene)
+                context[gene] = get_genomic_context_alt(df, gene)
         # place on evolutionary tree
         # compare genomic contexts
         # - has this gene moved from plamid to chromosome

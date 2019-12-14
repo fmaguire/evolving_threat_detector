@@ -6,7 +6,7 @@ __version__ = "0.0.1"
 import time
 import pandas as pd
 import logging
-import os, sys
+import os, sys, csv, glob
 import subprocess
 
 def run_rgi(input_genome, num_threads, run_name):
@@ -127,6 +127,20 @@ def find_relatives(input_genome, database_dir, mash_distance,
 
     return closest_taxa
 
+def find_rgi_differences(rgi_output, args_in_relatives):
+    files = rgi_output["genomes"]
+
+    isolate = set(rgi_output["Best_Hit_ARO"])
+    others = set()
+
+    for f in files:
+        df2 = pd.read_csv(f, sep='\t')
+        others.update(set(df2["Best_Hit_ARO"]))
+
+    # print("Isolate - Others: ", isolate.difference(others))
+    # print("Others - Isolate: ", others.difference(isolate))
+
+    return {"unique_to_isolate": isolate.difference(others), "missing_from_isolate": others.difference(isolate)}
 
 def run(args):
     """
@@ -166,26 +180,21 @@ def run(args):
                                        args.mash_distance,
                                        args.num_threads,
                                        run_name)
+    
+    for g in closest_relatives:
+        # find tab files for related genomes
+        files = glob.glob(os.path.join(args.database_dir, "rgi_output", "*", "*.txt"))
+        genomes = {}
+        for f in files:
+            if g in f:
+                genomes = f
+        rgi_output["genomes"] = genomes
 
-     # get rgi output for closest from database dir
-
-    #closest_relatives_rgi_predictions = {}
-    #for taxa in closest_taxa:
-    #    rgi_output_file = os.path.join(database_dir, 'rgi_output',
-    #                                   taxa) + '.txt'
-    #    rgi_output = pd.read_csv(rgi_output_file, sep='\t')
-    #    rgi_output['genome'] = taxa
-
-
-    #    #extract rgi output in database_dir
-    #    #add genome column with taxa name
-    #    pass
-
+    # get rgi output for closest from database dir
     # combine outputs into one dataframe
-    # return
-
     # get difference between rgi hits and nearest relatives
-    # differences = find_rgi_differences(rgi_output, args_in_relatives)
+    differences = find_rgi_differences(rgi_output)
+    # print(dict(differences))
 
     # for genes in differences:
         # place on evolutionary tree

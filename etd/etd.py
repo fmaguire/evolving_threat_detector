@@ -9,6 +9,10 @@ import logging
 import os, sys, csv, glob, json
 import subprocess
 
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
 def run_rgi(input_genome, num_threads, run_name):
     """
     Run RGI on the input genome
@@ -193,8 +197,63 @@ def get_genomic_context_alt(df, gene):
     out = out.loc[df['Criteria'] == "perfect"]
 
     out = out.loc[ (df['NCBI Chromosome'] > 0.00) | (df['NCBI Plasmid'] > 0.00)]
-    # Criteria
-    return out.to_dict(orient="index")
+    # plot
+    res = out.to_dict(orient="index")
+    # with open("data.json", "w") as af:
+    #     af.write(json.dumps(res,sort_keys=True))
+    # exit("done")
+    plot_gene_chromosome_plasmid_context(res)
+    return res
+
+def plot_gene_chromosome_plasmid_context(data):
+    labels = []
+    plasmid = []
+    chromosome = []
+    gene = ""
+    # with open(os.path.join("data.json"), 'r') as jfile:
+    #     data = json.load(jfile)
+    for i in data:
+        labels.append(data[i]["Pathogen"])
+        plasmid.append(data[i]["NCBI Plasmid"])
+        chromosome.append(data[i]["NCBI Chromosome"])
+        gene = data[i]["Name"]
+
+    x = np.arange(len(labels))  # the label locations
+    width = 0.2  # the width of the bars
+
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(x - width/2, plasmid, width, label='Plasmid')
+    rects2 = ax.bar(x + width/2, chromosome, width, label='Chromosome')
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_ylabel('Percentage of Isolates')
+    ax.set_title('Percentage by Plasmid and Chromosome for {}'.format(gene))
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    # ax.set_xticklabels(labels, rotation=45, rotation_mode="anchor")
+    # ax.grid(True)
+    ax.grid(color='grey', linestyle='-', linewidth=.5)
+    ax.legend()
+
+    autolabel(rects1, ax)
+    autolabel(rects2, ax)
+
+    # fig.tight_layout()
+    plt.savefig("{}.svg".format(gene), dpi=150)
+    plt.savefig("{}.png".format(gene), dpi=150)
+    # plt.show()
+
+def autolabel(rects, ax):
+    """Attach a text label above each bar in *rects*, displaying its height."""
+    for rect in rects:
+        height = rect.get_height()
+        ax.annotate('{}'.format(height),
+                    xy=(rect.get_x() + rect.get_width() / 2, height),
+                    xytext=(0, 3),  # 3 points vertical offset
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
+
 
 
 def run(args):
@@ -224,7 +283,8 @@ def run(args):
         logging.basicConfig(filename=f"{run_name}.log",
                             format='%(levelname)s:%(message)s',
                             level=logging.INFO)
-
+    # plot_gene_chromosome_plasmid_context()
+    # exit("?????")
     logging.info(f"Started ETD '{run_name}' with input '{args.input_genome}'")
     # run RGI on input contigs
     rgi_output = run_rgi(args.input_genome, args.num_threads, run_name)

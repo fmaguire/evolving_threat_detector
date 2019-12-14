@@ -4,7 +4,7 @@
 __version__ = "0.0.1"
 
 import time
-import pandas
+import pandas as pd
 import logging
 import os, sys
 import subprocess
@@ -28,21 +28,21 @@ def run_rgi(input_genome, num_threads, run_name):
                                  check=True,
                                  stdout=subprocess.PIPE,
                                  encoding="utf-8")
-    rgi_version = strip(rgi_version[-1])
+    rgi_version = rgi_version.stdout.strip()
 
     card_version = subprocess.run(["rgi", "database", "--version"],
                                  check=True,
                                  stdout=subprocess.PIPE,
                                  encoding="utf-8")
-    card_version = strip(card_version[-1])
+    card_version = card_version.stdout.strip()
 
     logging.info(f"Running RGI (v{rgi_version}) with CARD (v{card_version})")
     logging.info(f"Using {num_threads} threads")
 
     # run RGI
     output_name = os.path.join(rgi_output_dir, run_name)
-    subprocess.run(['rgi', '--input_sequence', input_genome, '--output_file',
-                    output_name, '--alignment_tool', 'DIAMOND',
+    subprocess.run(['rgi', 'main', '--input_sequence', input_genome,
+                    '--output_file', output_name, '--alignment_tool', 'DIAMOND',
                     '--num_threads', str(num_threads), '--clean'],
                     check=True)
 
@@ -77,7 +77,7 @@ def run_mash(input_genome, database_dir, num_threads, run_name):
                                  check=True,
                                  stdout=subprocess.PIPE,
                                  encoding="utf-8")
-    mash_version = strip(mash_version[-1])
+    mash_version = mash_version.stdout.strip()
     logging.info(f"Running Mash (v{mash_version}) with {num_threads} threads")
 
     # run mash
@@ -91,7 +91,7 @@ def run_mash(input_genome, database_dir, num_threads, run_name):
     # parse mash output
     mash_output_file = os.path.join(mash_output_dir, 'mash_distances.tsv')
     with open(mash_output_file, 'w') as fh:
-        fh.write(mash_output[-1])
+        fh.write(mash_output.stdout)
     logging.info(f"Mash output dumped to {mash_output_file}")
 
     mash_distances = pd.read_csv(mash_output_file, sep='\t')
@@ -145,11 +145,9 @@ def run(args):
     Parameters:
         args: argparse arguments
     """
-    input_genome = args.input_genome
-
     if not args.output_dir:
         # extract input filename
-        run_name = os.path.splitext(os.path.basename(args.input))[0]
+        run_name = os.path.splitext(os.path.basename(args.input_genome))[0]
         # add unix timestamp to name
         run_name = run_name + str(int(time.time()))
     else:
@@ -168,15 +166,15 @@ def run(args):
                             format='%(levelname)s:%(message)s',
                             level=logging.INFO)
 
-    logging.info(f"Started ETD '{run_name}' with input '{input_genome}'")
+    logging.info(f"Started ETD '{run_name}' with input '{args.input_genome}'")
 
     # run RGI on input contigs
-    rgi_output = run_rgi(input_genome, args.num_threads, run_name)
+    rgi_output = run_rgi(args.input_genome, args.num_threads, run_name)
 
     # find nearest relatives complements of arg genes
-    relatives_rgi_output = find_relatives(input_genome,
+    relatives_rgi_output = find_relatives(args.input_genome,
+                                          args.database_dir,
                                           args.num_threads,
-                                          database_dir,
                                           run_name)
 
     # get difference between rgi hits and nearest relatives

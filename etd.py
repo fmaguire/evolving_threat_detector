@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from etd import etd
+import os
 import argparse
 
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
                         type=lambda x: is_valid_file(parser, x),
                         required=True,
                         help="assembled bacterial contigs in fasta format")
-    parser.add_argument('-d', '--database_dir', required=True,
+    parser.add_argument('-d', '--database_dir', type=str, required=True,
                         help="CARD prevalence database dir")
     parser.add_argument('-o', '--output_dir', default=False,
                         help="Output directory path")
@@ -36,6 +37,11 @@ if __name__ == '__main__':
                         help="Number of threads to use")
     parser.add_argument('--debug', action='store_true', default=False,
                         help="Run in debug mode")
+    parser.add_argument('--verbose', action='store_true', default=False,
+                        help="Run with verbose output")
+    parser.add_argument('-v', '--version', action='store_true', default=False,
+                        help="Output version and exit")
+
     args = parser.parse_args()
 
     etd.run(args)

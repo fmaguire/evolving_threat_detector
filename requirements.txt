@@ -3,3 +3,4 @@ tox
 tox-travis
 pytest
 flake8
+pandas

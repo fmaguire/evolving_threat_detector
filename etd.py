@@ -24,7 +24,11 @@ def is_valid_file(parser, arg):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Evolving Threat Detector')
+    parser = argparse.ArgumentParser(description='Evolving Threat Detector',
+                                     prog='ETD')
+
+    parser.add_argument('-v', '--version', action='version',
+                        version=f"%(prog)s {etd.__version__}")
     parser.add_argument('-i', '--input_genome',
                         type=lambda x: is_valid_file(parser, x),
                         required=True,
@@ -33,14 +37,14 @@ if __name__ == '__main__':
                         help="CARD prevalence database dir")
     parser.add_argument('-o', '--output_dir', default=False,
                         help="Output directory path")
+    parser.add_argument('-x', '--mash_distance', default=0.01, type=float,
+                        help="Maximum mash distance to retain")
     parser.add_argument('-j', '--num_threads', default=1, type=int,
                         help="Number of threads to use")
     parser.add_argument('--debug', action='store_true', default=False,
                         help="Run in debug mode")
     parser.add_argument('--verbose', action='store_true', default=False,
                         help="Run with verbose output")
-    parser.add_argument('-v', '--version', action='store_true', default=False,
-                        help="Output version and exit")
 
     args = parser.parse_args()
 

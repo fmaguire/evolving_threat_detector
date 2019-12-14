@@ -94,12 +94,14 @@ def run_mash(input_genome, database_dir, num_threads, run_name):
         fh.write(mash_output.stdout)
     logging.info(f"Mash output dumped to {mash_output_file}")
 
-    mash_distances = pd.read_csv(mash_output_file, sep='\t')
+    # get dataframe and take transpose
+    mash_distances = pd.read_csv(mash_output_file, sep='\t', index_col=0).T
 
     return mash_distances
 
 
-def find_relatives(input_genome, database_dir, num_threads, run_name):
+def find_relatives(input_genome, database_dir, mash_distance,
+                   num_threads, run_name):
     """
     Using MASH find the nearest reference sequences in CARD prevalence
 
@@ -114,28 +116,16 @@ def find_relatives(input_genome, database_dir, num_threads, run_name):
                               num_threads, run_name)
 
     # get closest relatives (distances < 0.02)
-    closest = mash_distances[mash_distances[input_genome] < 0.02]
+    closest = mash_distances[mash_distances[input_genome] <= mash_distance]
     closest = closest.sort_values(input_genome, ascending=True)
 
     # grab top 10 or all if fewer than 10 genomes had a hit this close
     if closest.shape[0] > 10:
-        closest_taxa = closest['#query'].head(10).values
+        closest_taxa = closest.head(10).values
     else:
-        closest_taxa = closest['#query'].values
+        closest_taxa = closest.index
 
-    # get rgi output for closest from database dir
-    for taxa in closest_taxa:
-        rgi_output_file = os.path.join(database_dir, 'rgi', taxa) + '.txt'
-        rgi_output = pd.read_csv(rgi_output_file, sep='\t')
-        rgi_output['genome'] = taxa
-
-
-        #extract rgi output in database_dir
-        #add genome column with taxa name
-        pass
-
-    # combine outputs into one dataframe
-    # return
+    return closest_taxa
 
 
 def run(args):
@@ -167,15 +157,32 @@ def run(args):
                             level=logging.INFO)
 
     logging.info(f"Started ETD '{run_name}' with input '{args.input_genome}'")
-
     # run RGI on input contigs
     rgi_output = run_rgi(args.input_genome, args.num_threads, run_name)
 
     # find nearest relatives complements of arg genes
-    relatives_rgi_output = find_relatives(args.input_genome,
-                                          args.database_dir,
-                                          args.num_threads,
-                                          run_name)
+    closest_relatives = find_relatives(args.input_genome,
+                                       args.database_dir,
+                                       args.mash_distance,
+                                       args.num_threads,
+                                       run_name)
+
+     # get rgi output for closest from database dir
+
+    closest_relatives_rgi_predictions = {}
+    for taxa in closest_taxa:
+        rgi_output_file = os.path.join(database_dir, 'rgi_output',
+                                       taxa) + '.txt'
+        rgi_output = pd.read_csv(rgi_output_file, sep='\t')
+        rgi_output['genome'] = taxa
+
+
+        #extract rgi output in database_dir
+        #add genome column with taxa name
+        pass
+
+    # combine outputs into one dataframe
+    # return
 
     # get difference between rgi hits and nearest relatives
     # differences = find_rgi_differences(rgi_output, args_in_relatives)

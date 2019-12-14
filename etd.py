@@ -24,10 +24,18 @@ def is_valid_file(parser, arg):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Evolving Threat Detector')
-    parser.add_argument('-i', '--input',
+    parser.add_argument('-i', '--input_genome',
                         type=lambda x: is_valid_file(parser, x),
                         required=True,
                         help="assembled bacterial contigs in fasta format")
+    parser.add_argument('-d', '--database_dir', required=True,
+                        help="CARD prevalence database dir")
+    parser.add_argument('-o', '--output_dir', default=False,
+                        help="Output directory path")
+    parser.add_argument('-j', '--num_threads', default=1, type=int,
+                        help="Number of threads to use")
+    parser.add_argument('--debug', action='store_true', default=False,
+                        help="Run in debug mode")
     args = parser.parse_args()
 
     etd.run(args)

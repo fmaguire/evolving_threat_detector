@@ -169,17 +169,17 @@ def run(args):
 
      # get rgi output for closest from database dir
 
-    closest_relatives_rgi_predictions = {}
-    for taxa in closest_taxa:
-        rgi_output_file = os.path.join(database_dir, 'rgi_output',
-                                       taxa) + '.txt'
-        rgi_output = pd.read_csv(rgi_output_file, sep='\t')
-        rgi_output['genome'] = taxa
+    #closest_relatives_rgi_predictions = {}
+    #for taxa in closest_taxa:
+    #    rgi_output_file = os.path.join(database_dir, 'rgi_output',
+    #                                   taxa) + '.txt'
+    #    rgi_output = pd.read_csv(rgi_output_file, sep='\t')
+    #    rgi_output['genome'] = taxa
 
 
-        #extract rgi output in database_dir
-        #add genome column with taxa name
-        pass
+    #    #extract rgi output in database_dir
+    #    #add genome column with taxa name
+    #    pass
 
     # combine outputs into one dataframe
     # return

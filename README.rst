@@ -31,7 +31,7 @@ Overview
 --------
 
 .. image:: docs/etd_overview.png 
-    :width: 500
+    :width: 400
     :alt: Schematic overview of the Evolving Threat Detector
 
 Output Structure

@@ -9,6 +9,9 @@ import logging
 import os, sys, csv, glob, json
 import subprocess
 
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 
 from etd import rgi
 from etd import relatives

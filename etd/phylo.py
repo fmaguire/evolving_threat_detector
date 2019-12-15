@@ -7,10 +7,9 @@ import os
 import logging
 import subprocess
 
-def get_phylo_context(gene_name, seq_paths, database_dir, num_threads):
+def get_phylo_context(aro, seq_paths, database_dir, num_threads):
 
     # make the run_folder if it doesn't exist
-
     phylo_output_dir = os.path.join(seq_paths['folder'], 'pplacer')
     if not os.path.exists(phylo_output_dir):
         os.mkdir(phylo_output_dir)
@@ -18,9 +17,10 @@ def get_phylo_context(gene_name, seq_paths, database_dir, num_threads):
     #get appropriate refpkg from index in database dir
     #taxit create -l MCR -P my.refpkg --aln-fasta clean_mcr.afa --tree-stats treestats.txt --tree-file clean_mcr.tree
     phylo_db_dir = os.path.join(database_dir, 'phylo')
-    refpkg_index = pd.read_csv(os.path.join(phylo_db_dir, 'index.tsv'), sep='\t')
+    refpkg_index = pd.read_csv(os.path.join(phylo_db_dir, 'index.tsv'),
+            sep='\t', dtype={'ARO': str, 'refpkg_path': str})
 
-    refpkg_name = refpkg_index[refpkg_index['gene'] == gene_name]['refpkg_path'].iloc[0]
+    refpkg_name = refpkg_index[refpkg_index['ARO'] == aro]['refpkg_path'].iloc[0]
 
     refpkg_path = os.path.join(phylo_db_dir, refpkg_name)
     ref_alignment = os.path.join(refpkg_path, 'ref_alignment.sto')

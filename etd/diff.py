@@ -25,28 +25,31 @@ def find_rgi_differences(input_rgi, closest_relatives_rgi):
     """
 
     logging.info("Determining differences in RGI predictions")
+    args_in_input = set(arg_tuple for arg_tuple in \
+            input_rgi[['ARO', 'Best_Hit_ARO']].itertuples(index=False, name=None))
+    set_args_in_relatives = set()
 
-    args_in_input = set(input_rgi['Best_Hit_ARO'].values)
-    args_in_relatives = set()
     for genome, rgi in closest_relatives_rgi.items():
-        args_in_relatives.update(rgi['Best_Hit_ARO'].values)
+        args_in_relative = set(arg_tuple for arg_tuple in \
+            rgi[['ARO', 'Best_Hit_ARO']].itertuples(index=False, name=None))
+        set_args_in_relatives.update(args_in_relative)
 
-    unique_to_isolate = args_in_input.difference(args_in_relatives)
-    missing_from_isolate = args_in_relatives.difference(args_in_input)
+    unique_to_isolate = args_in_input.difference(set_args_in_relatives)
+    missing_from_isolate = set_args_in_relatives.difference(args_in_input)
 
     logging.info(f"Unique ARG in isolate compared to relatives {str(unique_to_isolate)}")
     logging.debug(f"Missing ARGs in isolate compared to relatives {str(missing_from_isolate)}")
 
     logging.debug(f"Grabbing predicted DNA sequences for unique ARGs in input")
     sequences_uniq_to_isolate = {}
-    for arg_name in unique_to_isolate:
+    for aro, arg_name in unique_to_isolate:
         arg_rgi_data = input_rgi[input_rgi['Best_Hit_ARO'] == arg_name]
         # needs handled better at some point but unique is fine for now
         if arg_rgi_data.shape[0] > 1:
-            logging.warning(f"Multiple copes of {arg_name} so taking first")
+            logging.warning(f"Multiple copies of {arg_name} so taking first")
 
         arg_sequence = arg_rgi_data['Predicted_DNA'].iloc[0]
-        sequences_uniq_to_isolate[arg_name] = arg_sequence
+        sequences_uniq_to_isolate[str(aro)] = (arg_name, arg_sequence)
     logging.debug(f"Sequences unique to isolate {str(sequences_uniq_to_isolate)}")
 
     return unique_to_isolate, sequences_uniq_to_isolate, missing_from_isolate
@@ -60,15 +63,16 @@ def prepare_context_analysis(run_name, unique_arg_seqs_in_isolate):
     os.mkdir(main_dir)
 
     gene_data = {}
-    for gene, sequence in unique_arg_seqs_in_isolate.items():
-        clean_gene_name = gene.replace(' ', '_').replace("'", "")
-        gene_dir = os.path.join(main_dir, clean_gene_name)
+    for aro, aro_data in unique_arg_seqs_in_isolate.items():
+        gene_name = aro_data[0]
+        sequence = aro_data[1]
+        gene_dir = os.path.join(main_dir, aro)
         os.mkdir(gene_dir)
-        gene_seq_file = os.path.join(gene_dir, clean_gene_name + ".fas")
+        gene_seq_file = os.path.join(gene_dir, aro + ".fas")
         with open(gene_seq_file, 'w') as fh:
-            fh.write(f">new_ref_{gene.replace('.', '').replace('-', '')}\n{sequence}")
+            fh.write(f">new_ref_{aro}_{gene_name.replace('.', '').replace('-', '')}\n{sequence}")
 
-        gene_data[gene] = {'seq_file': gene_seq_file, 'folder': gene_dir}
+        gene_data[aro] = {'seq_file': gene_seq_file, 'folder': gene_dir}
 
     return gene_data
 

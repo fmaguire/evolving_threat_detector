@@ -1,12 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
+import pandas as pd
+import os
+import sys
+
+def load_metadata(database_dir):
+    # load index file
+    # index-for-model-sequences.txt
+    # df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt.gz"), sep='\t', compression="gzip")
+    card_prev_metadata_path = os.path.join(database_dir, "index", "card_prevalence.txt.gz")
+    if os.path.exists(card_prev_metadata_path):
+        card_prev_metadata_df = pd.read_csv(card_prev_metadata_path,
+                                            sep='\t', compression="gzip")
+    else:
+        logging.error(f"CARD prev index {card_prev_metadata_path} doesn't exist")
+        sys.exit(1)
+
+    return card_prev_metadata_df
 
 
-def get_genomic_context(df, gene):
+def get_genomic_context(gene_name, seq_paths, database_dir):
+
+    logging.info(f"Determing genomic context of {gene} in CARD-prevalence")
+
     # df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt"), sep='\t')
     # gene="MCR-9"
-    out = df.loc[df['aro_accession'] == "ARO:{}".format(gene)]
+    df = load_metadata(database_dir)
+
+    out = df.loc[df['aro_accession'] == "ARO:{}".format(gene_name)]
     out = out.loc[df['rgi_criteria'] == "Perfect"]
 
     out_plasmid = out.loc[df['data_type'] == "ncbi_plasmid"]
@@ -26,7 +49,7 @@ def get_genomic_context(df, gene):
 
     return {"found_in_plasmids": u_plasmid, "found_in_chromosomes": u_chromosome}
 
-def get_genomic_context_alt(df, gene):
+def plot_genomic_context(df, gene):
     out = df.loc[df['ARO Accession'] == "ARO:{}".format(gene)]
     out = out.loc[df['Criteria'] == "perfect"]
 

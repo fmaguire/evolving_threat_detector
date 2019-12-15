@@ -72,34 +72,23 @@ def run(args):
             unique_arg_seqs_in_isolate, \
             missing_from_isolate = diff.find_rgi_differences(rgi_output,
                                                              closest_relatives_rgi)
-    assert False
 
-    # load index file
-    # index-for-model-sequences.txt
-    # df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt.gz"), sep='\t', compression="gzip")
-    card_prev_metadata_path = os.path.join(args.database_dir, "index", "card_prevalence.txt.gz")
-    if os.path.exists(card_prev_metadata_path):
-        card_prev_metadata_df = pd.read_csv(card_prev_metadata_path,
-                                            sep='\t', compression="gzip")
-    else:
-        logging.error(f"CARD prev index {card_prev_metadata_path} doesn't exist")
-        sys.exit(1)
+    unique_seq_paths = diff.prepare_context_analysis(run_name,
+                                                     unique_arg_seqs_in_isolate)
 
 
-    ## Analyse the sequence changes
-    #for difference_type in arg_differences_in_input:
-    #    context = {}
-    #    phylo = {}
-    #    metadata = {}
-    #    if gene == "unique_to_isolate":
-    #        # print(differences[genes])
-    #        for gene in differences[genes]:
-    #            # context[gene] = get_genomic_context(df, gene)
-    #            context[gene] = context.get_genomic_context_alt(df, gene)
-    #    # place on evolutionary tree
-    #    # compare genomic contexts
-    #    # - has this gene moved from plamid to chromosome
-    #    # - has this gene been found on this organism before
-    #    # try and grab geographic data?
-    #print("------- Gene genomic contexts: (unique_to_isolate) ------------------")
-    #print(json.dumps(context, indent=2))
+    # Analyse the sequence changes
+    for unique_seq, seq_paths in unique_seq_paths.items():
+        # needs tidied and outputs dumped to appropriate path
+        # sorry slightly broke things with using amr gene name instead of ARO
+        #observed_context = context.get_genomic_context(unique_seq, seq_paths,
+        #                                               args.database_dir)
+
+        phylo_context = phylo.get_phylo_context(unique_seq, seq_paths,
+                                                args.database_dir,
+                                                args.num_threads)
+
+        print(phylo_context)
+
+        #metadata_context = metadata.get_spatiotemp_context(unique_seq, seq_paths,
+        #                                                    args.database_dir)

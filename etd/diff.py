@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
+import os
 import logging
 
 def find_rgi_differences(input_rgi, closest_relatives_rgi):
@@ -49,3 +50,25 @@ def find_rgi_differences(input_rgi, closest_relatives_rgi):
     logging.debug(f"Sequences unique to isolate {str(sequences_uniq_to_isolate)}")
 
     return unique_to_isolate, sequences_uniq_to_isolate, missing_from_isolate
+
+
+def prepare_context_analysis(run_name, unique_arg_seqs_in_isolate):
+    """
+    Create the folders and write the sequence data for the context analysis
+    """
+    main_dir = os.path.join(run_name, 'unique_to_isolate')
+    os.mkdir(main_dir)
+
+    gene_data = {}
+    for gene, sequence in unique_arg_seqs_in_isolate.items():
+        clean_gene_name = gene.replace(' ', '_').replace("'", "")
+        gene_dir = os.path.join(main_dir, clean_gene_name)
+        os.mkdir(gene_dir)
+        gene_seq_file = os.path.join(gene_dir, clean_gene_name + ".fas")
+        with open(gene_seq_file, 'w') as fh:
+            fh.write(f">new_ref_{gene.replace('.', '').replace('-', '')}\n{sequence}")
+
+        gene_data[gene] = {'seq_file': gene_seq_file, 'folder': gene_dir}
+
+    return gene_data
+

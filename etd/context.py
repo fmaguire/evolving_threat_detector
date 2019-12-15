@@ -5,6 +5,8 @@ import logging
 import pandas as pd
 import os
 import sys
+import matplotlib
+import matplotlib.pyplot as plt
 
 def load_metadata(database_dir):
     # load index file

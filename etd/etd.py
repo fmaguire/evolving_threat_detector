@@ -68,14 +68,16 @@ def run(args):
 
     # combine outputs into one dataframe
     # get difference between rgi hits and nearest relatives
-
     unique_to_isolate, \
             sequences_uniq_to_isolate, \
             missing_from_isolate = diff.find_rgi_differences(rgi_output,
                                                              closest_relatives_rgi)
-
     unique_seq_paths = diff.prepare_context_analysis(run_name,
                                                      sequences_uniq_to_isolate)
+
+    # get biosample metadata for closest relatives
+    metadata_context = metadata.get_spatiotemp_context(run_name,
+                                                       closest_relatives)
 
     # Analyse the sequence changes
     for unique_aro, seq_data in sequences_uniq_to_isolate.items():
@@ -93,5 +95,3 @@ def run(args):
                                                 args.num_threads)
 
 
-        #metadata_context = metadata.get_spatiotemp_context(unique_aro, seq_paths,
-        #                                                    args.database_dir)

@@ -48,15 +48,14 @@ input genome name followed by the UNIX timestamp
     ├── rgi
     │   ├── test_genome.json
     │   └── test_genome.txt
+    ├── related_isolate_geospatial_analysis_of_relatives
     └── unique_to_isolate 
         ├── amr_gene1
         │   ├── phylogenetic
-        │   ├── genomic_context
-        │   └── geospaital
+        │   └── genomic_context
         └── amr_gene2
             ├── phylogenetic
-            ├── genomic_context
-            └── geospaital
+            └── genomic_context
 
 
 External Dependencies

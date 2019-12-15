@@ -68,27 +68,31 @@ def run(args):
 
     # combine outputs into one dataframe
     # get difference between rgi hits and nearest relatives
-    unique_arg_to_isolate, \
-            unique_arg_seqs_in_isolate, \
+
+    unique_to_isolate, \
+            sequences_uniq_to_isolate, \
             missing_from_isolate = diff.find_rgi_differences(rgi_output,
                                                              closest_relatives_rgi)
 
     unique_seq_paths = diff.prepare_context_analysis(run_name,
-                                                     unique_arg_seqs_in_isolate)
-
+                                                     sequences_uniq_to_isolate)
 
     # Analyse the sequence changes
-    for unique_seq, seq_paths in unique_seq_paths.items():
-        # needs tidied and outputs dumped to appropriate path
-        # sorry slightly broke things with using amr gene name instead of ARO
-        #observed_context = context.get_genomic_context(unique_seq, seq_paths,
-        #                                               args.database_dir)
+    for unique_aro, seq_data in sequences_uniq_to_isolate.items():
+        # lookup card-prev data
+        amr_name = seq_data[0]
+        seq_paths = unique_seq_paths[unique_aro]
 
-        phylo_context = phylo.get_phylo_context(unique_seq, seq_paths,
-                                                args.database_dir,
-                                                args.num_threads)
+        observed_context = context.get_genomic_context(unique_aro,
+                                                       amr_name,
+                                                       seq_paths,
+                                                       args.database_dir)
+        print(observed_context)
 
-        print(phylo_context)
+        #phylo_context = phylo.get_phylo_context(unique_seq, seq_paths,
+        #                                        args.database_dir,
+        #                                        args.num_threads)
+
 
         #metadata_context = metadata.get_spatiotemp_context(unique_seq, seq_paths,
         #                                                    args.database_dir)

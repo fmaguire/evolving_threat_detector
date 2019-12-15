@@ -5,13 +5,10 @@ import logging
 import pandas as pd
 import os
 import sys
-import matplotlib
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 def load_metadata(database_dir):
-    # load index file
-    # index-for-model-sequences.txt
-    # df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt.gz"), sep='\t', compression="gzip")
     card_prev_metadata_path = os.path.join(database_dir, "index", "card_prevalence.txt.gz")
     if os.path.exists(card_prev_metadata_path):
         card_prev_metadata_df = pd.read_csv(card_prev_metadata_path,
@@ -23,46 +20,62 @@ def load_metadata(database_dir):
     return card_prev_metadata_df
 
 
-def get_genomic_context(gene_name, seq_paths, database_dir):
+def get_genomic_context(aro, amr_name, seq_paths, database_dir):
 
-    logging.info(f"Determing genomic context of {gene} in CARD-prevalence")
+    # disable matplotlib font logger
+    logging.getLogger('matplotlib.font_manager').disabled = True
 
-    # df = pd.read_csv(os.path.join(args.database_dir, "index", "index-for-model-sequences.txt"), sep='\t')
-    # gene="MCR-9"
-    df = load_metadata(database_dir)
+    logging.info(f"Determing genomic context of {aro} in CARD-prevalence")
+    context_output_dir = os.path.join(seq_paths['folder'], 'genomic_context')
+    os.mkdir(context_output_dir)
 
-    out = df.loc[df['aro_accession'] == "ARO:{}".format(gene_name)]
-    out = out.loc[df['rgi_criteria'] == "Perfect"]
+    card_prev_data = load_metadata(database_dir)
 
-    out_plasmid = out.loc[df['data_type'] == "ncbi_plasmid"]
-    out_chromosome = out.loc[df['data_type'] == "ncbi_chromosome"]
+    # grab only accessions
+    card_prev_data = card_prev_data[card_prev_data['ARO Accession'] == f"ARO:{aro}"]
 
-    s_plasmid = list(out_plasmid["species_name"])
-    u_plasmid = []
-    for i_plasmid in s_plasmid:
-        if i_plasmid not in u_plasmid:
-            u_plasmid.append(i_plasmid)
+    # filter out any missing
+    card_prev_data = card_prev_data[(card_prev_data['NCBI Chromosome'] > 0.00) \
+            | (card_prev_data['NCBI Plasmid'] > 0.00)]
 
-    s_chromosome = list(out_chromosome["species_name"])
-    u_chromosome = []
-    for i_chromosome in s_chromosome:
-        if i_chromosome not in u_chromosome:
-            u_chromosome.append(i_chromosome)
+    # remove perfect only and take the perfect+strict data
+    card_prev_data = card_prev_data[card_prev_data['Criteria'] == "perfect_strict"]
 
-    return {"found_in_plasmids": u_plasmid, "found_in_chromosomes": u_chromosome}
+    card_prev_data = card_prev_data[['Pathogen' , 'NCBI Plasmid',
+                                     'NCBI WGS', 'NCBI Chromosome']]
 
-def plot_genomic_context(df, gene):
-    out = df.loc[df['ARO Accession'] == "ARO:{}".format(gene)]
-    out = out.loc[df['Criteria'] == "perfect"]
 
-    out = out.loc[ (df['NCBI Chromosome'] > 0.00) | (df['NCBI Plasmid'] > 0.00)]
-    # plot
-    res = out.to_dict(orient="index")
-    # with open("data.json", "w") as af:
-    #     af.write(json.dumps(res,sort_keys=True))
-    # exit("done")
-    plot_gene_chromosome_plasmid_context(res)
-    return res
+    gene_specific_prev_data = os.path.join(context_output_dir, 'prev_metadata.tsv')
+    logging.debug(f"Dumping relevant CARD-prev context data for {aro}: {gene_specific_prev_data}")
+    card_prev_data.to_csv(gene_specific_prev_data,
+                          sep='\t')
+
+    # summarise distribution of plasmid bornedness in isolates that have it
+    overall_mobility = card_prev_data['NCBI Plasmid'].describe()
+
+    logging.info(f"Overall mobility for {aro}: {overall_mobility['mean']}")
+
+    generate_context_plots(aro, amr_name, card_prev_data, context_output_dir)
+
+
+def generate_context_plots(aro, amr_name, metadata, context_output_dir):
+    sns.set_context('paper')
+    sns.set_style('whitegrid')
+
+    subset = pd.melt(metadata[['Pathogen', 'NCBI Chromosome', 'NCBI Plasmid']],
+                    id_vars='Pathogen',
+                    var_name='Genomic Context',
+                    value_name='% of Isolates')
+    order = subset.groupby('Pathogen')['% of Isolates'].sum().sort_values(ascending=False).index.values
+
+    sns.catplot(data = subset, y = 'Pathogen', x = '% of Isolates',
+                hue='Genomic Context', kind='bar', order=order)
+    plt.title(f"CARD Resistomes and Variants Context of {amr_name} ({aro})")
+    plt.tight_layout()
+    plot_path = os.path.join(context_output_dir, 'context_plot.png')
+    logging.debug(f"Saving context plot for {aro}: {plot_path}")
+    plt.savefig(plot_path, dpi=300)
+
 
 def plot_gene_chromosome_plasmid_context(data):
     labels = []
@@ -111,5 +124,3 @@ def autolabel(rects, ax):
                     xytext=(0, 3),  # 3 points vertical offset
                     textcoords="offset points",
                     ha='center', va='bottom')
-
-

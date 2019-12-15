@@ -26,6 +26,14 @@ pyflake code style, and building the documentation run::
 
     tox
 
+
+Overview
+--------
+
+.. image:: docs/etd_overview.png 
+    :width: 500
+    :alt: Schematic overview of the Evolving Threat Detector
+
 Output Structure
 ----------------
 

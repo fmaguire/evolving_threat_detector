@@ -87,12 +87,11 @@ def run(args):
                                                        amr_name,
                                                        seq_paths,
                                                        args.database_dir)
-        print(observed_context)
 
-        #phylo_context = phylo.get_phylo_context(unique_seq, seq_paths,
-        #                                        args.database_dir,
-        #                                        args.num_threads)
+        phylo_context = phylo.get_phylo_context(unique_aro, seq_paths,
+                                                args.database_dir,
+                                                args.num_threads)
 
 
-        #metadata_context = metadata.get_spatiotemp_context(unique_seq, seq_paths,
+        #metadata_context = metadata.get_spatiotemp_context(unique_aro, seq_paths,
         #                                                    args.database_dir)

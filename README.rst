@@ -26,6 +26,14 @@ pyflake code style, and building the documentation run::
 
     tox
 
+
+Overview
+--------
+
+.. image:: docs/etd_overview.png 
+    :width: 500
+    :alt: Schematic overview of the Evolving Threat Detector
+
 Output Structure
 ----------------
 
@@ -40,15 +48,15 @@ input genome name followed by the UNIX timestamp
     ├── rgi
     │   ├── test_genome.json
     │   └── test_genome.txt
-	└── different_amr_genes
+    └── unique_to_isolate 
         ├── amr_gene1
-    	│   ├── phylogenetic
-    	│   ├── genomic_context
-    	│   └── geospaital
-		└── amr_gene2
-    	    ├── phylogenetic
-    	    ├── genomic_context
-    	    └── geospaital
+        │   ├── phylogenetic
+        │   ├── genomic_context
+        │   └── geospaital
+        └── amr_gene2
+            ├── phylogenetic
+            ├── genomic_context
+            └── geospaital
 
 
 External Dependencies

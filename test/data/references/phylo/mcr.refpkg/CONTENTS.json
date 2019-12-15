@@ -1,0 +1,25 @@
+{
+    "metadata": {
+        "create_date": "2019-12-14 11:23:06",
+        "format_version": "1.1",
+        "locus": "MCR"
+    },
+    "files": {
+        "phylo_model": "phylo_modelt44lsocv.json",
+        "aln_fasta": "clean_mcr.afa",
+        "tree": "clean_mcr.tree",
+        "tree_stats": "treestats.txt"
+    },
+    "md5": {
+        "phylo_model": "ad70c9b302caf2f5674598f096437ce1",
+        "aln_fasta": "0ca4f1db0254319bb65d7638ef451d0e",
+        "tree": "804ee34391d69a524c2fdbd13a95f92d",
+        "tree_stats": "6fa8075782ede001af4e4e5ef5e0612b"
+    },
+    "log": [
+        "Stripped refpkg (removed 0 files)",
+        "Loaded initial files into empty refpkg"
+    ],
+    "rollback": null,
+    "rollforward": null
+}

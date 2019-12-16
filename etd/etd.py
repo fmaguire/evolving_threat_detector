@@ -20,6 +20,27 @@ from etd import context
 from etd import phylo
 from etd import metadata
 
+def check_dependencies():
+    """
+    Check all dependencies exist and work
+    """
+    missing=False
+    for program in ['rgi', 'pplacer', 'hmmalign', 'guppy', 'esearch', 'esummary',
+                    'xtract']:
+        try:
+            subprocess.run
+            logging.debug(f"Tool {program} is installed")
+        except:
+            logging.error(f"Tool {program} is not installed")
+            missing = True
+
+    if missing:
+        logging.error("One or more dependencies are missing please install")
+        sys.exit(1)
+    else:
+        logging.debug("All dependencies found")
+
+
 def run(args):
     """
     Runner function for the evolving threat detector
@@ -51,6 +72,9 @@ def run(args):
                                       logging.StreamHandler()])
 
     logging.info(f"Started ETD '{run_name}' with input '{args.input_genome}'")
+
+    # check dependencies
+    check_dependencies()
 
     # run RGI on input contigs
     rgi_output = rgi.run_rgi(args.input_genome, args.num_threads, run_name)

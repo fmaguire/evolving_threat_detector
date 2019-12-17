@@ -28,7 +28,7 @@ def check_dependencies():
     for program in ['rgi', 'pplacer', 'hmmalign', 'guppy', 'esearch', 'esummary',
                     'xtract']:
         try:
-            subprocess.run
+            subprocess.run(program, check=True)
             logging.debug(f"Tool {program} is installed")
         except:
             logging.error(f"Tool {program} is not installed")

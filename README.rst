@@ -66,3 +66,12 @@ External Dependencies
 - HHMER
 - e-utils
 
+Database Preparation
+--------------------
+
+The database can be built from the card underlying sequences i.e. a directory
+containing a set of directories for each taxa you want to include.
+
+These taxa directories must be extracted and should contain individual 
+fasta files (ending in '.fna') named with the accession and the type (chromosome, plasmid, or WGS)
+e.g. `NZ_LT905063.1_chromosome.fa`

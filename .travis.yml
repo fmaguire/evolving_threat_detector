@@ -8,6 +8,9 @@ install:
         - source "$HOME/miniconda/etc/profile.d/conda.sh"
         - conda create -n etd -c conda-forge -c bioconda -y mash hmmer entrez-direct rgi==5.1.0 pplacer
         - conda activate etd
+        - wget https://card.mcmaster.ca/download/0/broadstreet-v3.0.7.tar.gz
+        - tar xvf broadstreet-v3.0.7.tar.gz
+        - rgi load -i card.json
         - pip install tox-travis
         - pip install -r requirements.txt 
 script: tox

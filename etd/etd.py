@@ -25,11 +25,12 @@ def check_dependencies():
     Check all dependencies exist and work
     """
     missing=False
-    for program in ['rgi', 'pplacer --version', 'hmmalign -h', 'guppy --version', 'esearch', 'esummary',
-                    'xtract']:
+    for program in ['rgi database -v', 'pplacer --version', 'hmmalign -h', 'guppy --version', 'esearch --version', 'esummary --version',
+                    'xtract --version']:
         try:
-            subprocess.run(program, shell=True, check=True)
-            logging.debug(f"Tool {program} is installed")
+            output = subprocess.run(program, shell=True, check=True,
+                    stdout=subprocess.PIPE, encoding='utf-8')
+            logging.debug(f"Tool {program} is installed: {output.stdout}")
         except:
             logging.error(f"Tool {program} is not installed")
             missing = True

@@ -2,5 +2,12 @@ os: linux
 language: python
 python:
         - "3.8"
-install: pip install tox-travis
-script: scripts/install.sh 
+install:
+        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - source "$HOME/miniconda/etc/profile.d/conda.sh"
+        - conda create -n etd -c conda-forge -c bioconda -y install mash hmmer entrez-direct rgi==5.1.0 pplacer
+        - conda activate etd
+        - pip install tox-travis
+        - pip install -r requirements.txt 
+script: tox

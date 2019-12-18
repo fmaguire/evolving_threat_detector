@@ -25,8 +25,8 @@ def check_dependencies():
     Check all dependencies exist and work
     """
     missing=False
-    for program in ['rgi database -v', 'pplacer --version', 'hmmalign -h', 'guppy --version', 'esearch --version', 'esummary --version',
-                    'xtract --version']:
+    for program in ['rgi database -v', 'pplacer --version', 'hmmalign -h', 'guppy --version', 'esearch -version',
+                    'xtract -version']:
         try:
             output = subprocess.run(program, shell=True, check=True,
                     stdout=subprocess.PIPE, encoding='utf-8')

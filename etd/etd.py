@@ -120,3 +120,6 @@ def run(args):
                                                 args.num_threads)
 
 
+def database(args):
+    database.prepare_db(args)
+

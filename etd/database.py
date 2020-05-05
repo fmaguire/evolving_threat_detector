@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import tarfile
-import subprocess
-import argparse
-import os, sys, glob, time
-import logging
 
 def check_dependencies():
     """
@@ -111,7 +106,7 @@ def create_mash_sketch(taxa_folders, card_prev_dir):
     return
 
 
-def run(args):
+def prepare_db(args):
     # start logging
     run_name = f"ETD_DB_preparation_{int(time.time())}"
     if args.verbose:
@@ -139,18 +134,3 @@ def run(args):
 
     create_mash_sketch(taxa_folders, args.card_prev_dir)
 
-
-
-if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser(description="ETD Database Formatter")
-    parser.add_argument('--verbose', action='store_true', default=False,
-                        help='Run with verbose output')
-    parser.add_argument('-d', '--card_prev_dir', type=str, required=True,
-                            help="CARD prevalence tarball genome directory")
-    parser.add_argument('-j', '--num_threads', default=1, type=int,
-                            help='Number of threads to use')
-
-    args = parser.parse_args()
-
-    run(args)

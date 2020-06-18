@@ -79,7 +79,7 @@ e.g. `NZ_LT905063.1_chromosome.fa`
 Detailed Workflow
 =================
 
-.. image:: docs/resources/etd_workflow.pdf
+.. image:: docs/resources/etd_workflow.png
     :width: 300
     :alt: Overview of the workflow used by the Evolving Threat Detector
 

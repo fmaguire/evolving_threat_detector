@@ -17,7 +17,7 @@ Then you should be able to run::
 
 Make sure you add any new requirements you've added to the ``requirements.txt`` file
 
-If you write then then tests can be run as follows::
+If you write then tests can be run as follows::
 
     pytest
 
@@ -30,7 +30,7 @@ pyflake code style, and building the documentation run::
 Overview
 --------
 
-.. image:: docs/etd_overview.png 
+.. image:: docs/resources/etd_overview.png 
     :width: 300
     :alt: Schematic overview of the Evolving Threat Detector
 
@@ -75,3 +75,11 @@ containing a set of directories for each taxa you want to include.
 These taxa directories must be extracted and should contain individual 
 fasta files (ending in '.fna') named with the accession and the type (chromosome, plasmid, or WGS)
 e.g. `NZ_LT905063.1_chromosome.fa`
+
+Detailed Workflow
+=================
+
+.. image:: docs/resources/etd_workflow.pdf
+    :width: 300
+    :alt: Overview of the workflow used by the Evolving Threat Detector
+

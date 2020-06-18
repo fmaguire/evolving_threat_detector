@@ -1,0 +1,98 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\tikzset{%
+  >={Latex[width=2mm,length=2mm]},
+  % Specifications for style of nodes:
+            base/.style = {rectangle, rounded corners, draw=black,
+                           minimum width=4cm, minimum height=1cm,
+                           text centered, font=\sffamily},
+            base2/.style = {rectangle, rounded corners, draw=white, 
+                           minimum width=4cm, minimum height=1cm,
+                           text centered, font=\sffamily},
+            base3/.style = {circle, rounded corners, draw=white, 
+                           minimum width=4cm, minimum height=1cm,
+                           text centered, font=\sffamily},
+  input/.style = {base, fill=green!30},
+  file/.style = {base, fill=blue!30},
+  core/.style = {base3, fill=orange!15},
+  output/.style = {base, fill=red!30}, 
+  label/.style = {base2, fill=white!30},
+  process/.style = {base, minimum width=2.5cm, fill=orange!15,
+                           font=\ttfamily},
+}
+\title{COVID-19-SIGNAL Workflwo}
+\begin{document}    
+% Drawing part, node distance is 1.5 cm and every node
+% is prefilled with white background
+\begin{tikzpicture}[node distance=3cm,
+    every node/.style={fill=white, font=\sffamily}, align=center]
+  % Specification of nodes (position, etc.)
+    
+    \node (runrgi) [process] {1. Identify AMR Determinants};
+    \node (rgiout) [file, below of=runrgi] {Predicted Resistome};
+     
+     
+    \node (findclose) [process, xshift=4cm, right of=runrgi] {2. Find Closest Relatives};
+    \node (closergiout) [file, below of=findclose] {Closest Relatives in CARD Prevalence};
+   
+       \node (start) [input, above of=findclose] {Bacterial Genome};
+
+    \node (finddiffs) [process, below of=rgiout] {3. Find Resistome Differences};
+    \node (diffs) [file, below of=finddiffs] {Input Genome Resistome Changes\\Compared to Relatives};
+    
+    \node (missing) [output, right of=diffs, xshift=4cm] {Missing/Lost\\AMR Determinants};
+     
+    
+    \node (gained) [output, below of=diffs] {Gained AMR Determinants};
+    
+    \node (getmetadata) [process, right of=gained, xshift=4cm] {5. Spatiotemporal\\Analysis};
+    \node (metadata) [output, right of=getmetadata, xshift=4cm] {Sampling Time\\\& Location of Relatives};
+    
+    
+    
+    \node (genphylo) [output, above of=metadata] {Placement on Genome Phylogeny};
+    \node (getgenphylo) [process, above of=genphylo] {4. Genome Phylogenetic Placement};
+
+
+    \node (getcontext) [process, below of=gained] {6. Compare Genomic Contexts};
+    \node (context) [output, below of=getcontext] {Genomic Context Distribution};
+    
+    \node (getphylo) [process, right of=getcontext, xshift=4cm] {7. AMR Determinant\\Phylogenetic Placement};
+    \node (phylo) [output, below of=getphylo] {Placement on Reference AMR Phylogeny};
+    %legend
+    \node (text) [text, right of=start, xshift=4cm] {Legend};
+    \node (input) [input, below of=text, yshift=2cm] {Input File};
+    \node (process) [process, below of=input, yshift=2cm] {Process};
+    \node (file) [file, below of=process, yshift=2cm] {Intermediate File(s)};
+    \node (output) [output, below of=file, yshift=2cm] {Output};
+    
+    
+    \draw[->] (start) -- (runrgi);
+    \draw[->] (runrgi) --node[text, width=4cm]{Resistance Gene Identifier (RGI)} (rgiout);
+    
+    \draw[->] (start) -- (findclose);
+    \draw[->] (findclose) --node[text, width=4cm]{MASH against CARD Prevalence genomes} (closergiout);
+    
+    \draw[->] (closergiout) --node[text, width=4cm]{CARD Prevalence\\RGI Output} (finddiffs);
+    \draw[->] (rgiout) -- (finddiffs);
+    \draw[->] (finddiffs) --node[text, width=4cm]{User-defined Threshold} (diffs);
+
+    
+    \draw[->] (diffs) -- (missing);
+    \draw[->] (diffs) -- (gained);
+    
+    \draw[->] (gained) -- (getmetadata);
+    \draw[->] (getmetadata) --node[text, width=4cm]{BioSample} (metadata);
+    
+    \draw[->] (gained) -- (getcontext);
+    \draw[->] (getcontext) --node[text, width=4cm]{CARD Prevalence Annotations} (context);
+    
+    \draw[->] (gained) -- (getphylo);
+    \draw[->] (getphylo) --node[text, width=4cm]{pplacer on CARD Prevalence} (phylo);
+    
+    \draw[->] (closergiout) --node[text, width=4cm]{MASH Distances} (getgenphylo);
+    \draw[->] (getgenphylo) --node[text, width=4cm]{MASHTree on CARD Prevalence} (genphylo)
+    
+  \end{tikzpicture}
+\end{document}

@@ -69,12 +69,40 @@ External Dependencies
 Database Preparation
 --------------------
 
-The database can be built from the card underlying sequences i.e. a directory
+The database can be built from CARD prevalence sequences i.e. a directory
 containing a set of directories for each taxa you want to include.
 
-These taxa directories must be extracted and should contain individual 
-fasta files (ending in '.fna') named with the accession and the type (chromosome, plasmid, or WGS)
-e.g. `NZ_LT905063.1_chromosome.fa`
+::
+
+    card_prevalence
+    ├── genomes                                 # directory containing all CARD-prevalence genomes
+    |   |── Klebsiella_pneumoniae_NCBI_May2020
+    |   |   ├── NZ_NGWN01_wgs.fa
+    |   |   └── NZ_NIDM01000036.1_plasmid.fa
+    │   └── Klebsiella_oxytoca_NCBI_May2020
+    |       ├── NZ_CP029128.1_chromosome.fa
+    |       └── NZ_CP033845.1_plasmid.fa
+    ├── rgi_results                             # directory containing all RGI outputs with the same name as the genomes
+    |   |── Klebsiella_pneumoniae_NCBI_May2020
+    |   |   ├── NZ_NGWN01_wgs.txt
+    |   |   └── NZ_NIDM01000036.1_plasmid.txt
+    │   └── Klebsiella_oxytoca_NCBI_May2020
+    |       ├── NZ_CP029128.1_chromosome.txt
+    |       └── NZ_CP033845.1_plasmid.txt
+    ├── card                                    # directory containing the version of CARD canonical and prevalence used                        
+    |    |── card-data  
+    |    └── card-prevalence
+    └── etd_db                                  # etd specific generated files
+        |── card_prev.msh                       # mash sketch of all the genomes in CARD prevalence (i.e. genomes folder)
+        |── genome_trees                        # directory containing all generated genome phylogenies 
+        |   ├── genome_trees_index.json         # index linking accessions to their specific tree
+        |   ├── Klebsiella_pneumoniae_NCBI_May2020.mashtree
+        |   └── Klebsiella_oxytoca_NCBI_May2020.mashtree    
+        └── amr_phylogenies                     # directory containing all clustered CARD+CARD-Prevalence phylogenies
+            ├── amr_phylogenies_index.json      # index linking AROs to clusters
+            └── cluster1.tree
+            └── cluster2.tree
+                 
 
 Detailed Workflow
 =================

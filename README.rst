@@ -90,8 +90,8 @@ containing a set of directories for each taxa you want to include.
     |       ├── NZ_CP029128.1_chromosome.txt
     |       └── NZ_CP033845.1_plasmid.txt
     ├── card                                    # directory containing the version of CARD canonical and prevalence used                        
-    |    |── card-data  
-    |    └── card-prevalence
+    |   |── card-data  
+    |   └── card-prevalence
     └── etd_db                                  # etd specific generated files
         |── card_prev.msh                       # mash sketch of all the genomes in CARD prevalence (i.e. genomes folder)
         |── genome_trees                        # directory containing all generated genome phylogenies 

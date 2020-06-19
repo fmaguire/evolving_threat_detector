@@ -93,6 +93,7 @@ containing a set of directories for each taxa you want to include.
     |   |── card-data  
     |   └── card-prevalence
     └── etd_db                                  # etd specific generated files
+        |── etd_db_index.json                   # index for database
         |── card_prev.msh                       # mash sketch of all the genomes in CARD prevalence (i.e. genomes folder)
         |── genome_trees                        # directory containing all generated genome phylogenies 
         |   ├── genome_trees_index.json         # index linking accessions to their specific tree

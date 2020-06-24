@@ -32,7 +32,7 @@ def run_mash(input_genome, database_dir, num_threads, run_name):
     logging.info(f"Finding relatives using Mash (v{mash_version}) with {num_threads} threads")
 
     # run mash
-    reference_sketch = os.path.join(database_dir, 'card_prev.msh')
+    reference_sketch = os.path.join(database_dir, 'etd_db', 'card_prev.msh')
     mash_output = subprocess.run(['mash', 'dist', '-t', '-p', str(num_threads),
                                   reference_sketch, input_genome],
                                  check=True,
@@ -97,8 +97,8 @@ def get_rgi_results(closest_relatives, database_dir):
     logging.debug("Gathering RGI outputs from CARD-prev database")
     closest_relative_rgi = {}
     for genome in closest_relatives:
-        rgi_glob = os.path.join(database_dir, "rgi_output", "*",
-                                genome + ".txt")
+        rgi_glob = os.path.join(database_dir, "rgi_results", "*",
+                                genome + ".json")
         rgi_path = glob.glob(rgi_glob)
         if len(rgi_path) > 1:
             logging.error(f"Duplicate matches to rgi output for {rgi_path}: {str(rgi_path)}")

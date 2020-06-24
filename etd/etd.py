@@ -8,6 +8,7 @@ import pandas as pd
 import logging
 import os, sys, csv, glob, json
 import subprocess
+import joblib
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -19,6 +20,7 @@ from etd import diff
 from etd import context
 from etd import phylo
 from etd import metadata
+from etd import database
 
 def check_dependencies():
     """
@@ -42,7 +44,7 @@ def check_dependencies():
         logging.debug("All dependencies found")
 
 
-def run(args):
+def run_main(args):
     """
     Runner function for the evolving threat detector
 
@@ -87,6 +89,9 @@ def run(args):
                                                  args.num_threads,
                                                  run_name)
 
+    # place on mashtree
+    # todo
+
     # recover rgi tables for relatives
     closest_relatives_rgi = relatives.get_rgi_results(closest_relatives,
                                                      args.database_dir)
@@ -120,6 +125,8 @@ def run(args):
                                                 args.num_threads)
 
 
-def database(args):
+def run_database(args):
+
+    # check for already generated database
     database.prepare_db(args)
 

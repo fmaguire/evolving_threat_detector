@@ -54,7 +54,7 @@ if __name__ == '__main__':
                         required=True,
                         help="assembled bacterial contigs in fasta format")
     subparser_run.add_argument('-d', '--database_dir', type=str, required=True,
-                        help="CARD prevalence database dir")
+                        help="ETD/CARD prevalence database directory")
     subparser_run.add_argument('-o', '--output_dir', default=False,
                         help="Output directory path")
     subparser_run.add_argument('-x', '--mash_distance', default=0.01, type=float,
@@ -77,18 +77,21 @@ if __name__ == '__main__':
                         version=f"%(prog)s {etd.__version__}")
     subparser_db.add_argument('--verbose', action='store_true', default=False,
                         help='Run with verbose output')
-    subparser_db.add_argument('-d', '--card_prev_dir', type=str, required=True,
-                            help="CARD prevalence tarball genome directory")
+    subparser_db.add_argument('-d', '--database_dir', type=str, required=True,
+                            help="ETD/CARD prevalence database directory")
     subparser_db.add_argument('-j', '--num_threads', default=1, type=int,
                             help='Number of threads to use')
+    subparser_db.add_argument('--force', default=False,
+                            help='Force rebuild database')
+
 
 
     args = parser.parse_args()
 
     if args.command == 'run':
-        etd.run(args)
+        etd.run_main(args)
     elif args.command == 'database':
-        etd.database(args)
+        etd.run_database(args)
     else:
         parser.print_help()
         sys.exit(1)

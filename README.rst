@@ -112,3 +112,9 @@ Detailed Workflow
     :width: 300
     :alt: Overview of the workflow used by the Evolving Threat Detector
 
+
+
+Todo
+====
+
+Extract context using faidx (12.7kb average length of transposon): 2021.01.10.426126

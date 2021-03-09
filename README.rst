@@ -119,3 +119,5 @@ Todo
 
 Extract context using faidx (12.7kb average length of transposon): 2021.01.10.426126
 Visualisation of neighbourhood with https://github.com/gamcil/clinker
+
+Analysis of context: https://github.com/wtmatlock/flanker
